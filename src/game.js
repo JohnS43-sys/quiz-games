@@ -32,6 +32,8 @@ let currentPlayer = '';
 let questions = [];
 let currentQuestionIndex = 0;
 let score = 0;
+let streak = 0;
+let highestStreak = 0;
 
 
 // 🚀 INIT GAME
@@ -98,7 +100,6 @@ function startGame() {
     }
 
     showScreen('game-screen');
-    document.getElementById('player-name').textContent = currentPlayer;
     score = 0;
     currentQuestionIndex = 0;
     
@@ -112,8 +113,14 @@ function loadQuestion() {
         return;
     }
 
+    const qNumEl = document.getElementById('question-number');
+    if (qNumEl) {
+        qNumEl.textContent = `${currentQuestionIndex + 1}/${questions.length}`;
+    }
+
     const question = questions[currentQuestionIndex];
     document.getElementById('score').textContent = score;
+    document.getElementById('streak').textContent = streak;
     const picBox = document.getElementById('question-image');
     const txtBox = document.getElementById('question-text');
 
@@ -150,16 +157,25 @@ function loadQuestion() {
 
 // ⏱️ TIMER
 function startTimer(){
-  clearInterval(timer);          // kill any old interval
-  timeLeft = 10;
-  tick();                        // show first number immediately
+  clearInterval(timer);   
+  if (questions[currentQuestionIndex].question_difficulty === 'easy'){
+    document.getElementById('timer').textContent = '∞';
+    return;                     // No timer for easy questions
+  }      
+  else if (questions[currentQuestionIndex].question_difficulty === 'medium'){
+    timeLeft = 10;             // 10 seconds for medium
+  }
+  else if (questions[currentQuestionIndex].question_difficulty === 'hard'){
+    timeLeft = 5;              // 5 seconds for hard
+  }
+  tick();                       
 
   timer = setInterval(()=>{
     timeLeft--;
     tick();
     if (timeLeft <= 0){
       clearInterval(timer);
-      nextQuestion();            // single, reliable call
+      endGame();            // single, reliable call
     }
   }, 1000);
 }
@@ -186,8 +202,18 @@ function checkAnswer(selected, correct) {
         // Speed bonus: more points for faster answers
         const points = 10 + timeLeft;
         score += points;
+        streak++;
+        if (streak > highestStreak) {
+            highestStreak = streak;
+        }
         document.getElementById('score').textContent = score;
+    }  else {   
+        streak = 0; // Reset streak on wrong answer
     }
+    document.getElementById('streak').textContent = streak;
+
+    // Proceed to next question after a short delay
+    
 
     setTimeout(nextQuestion, 2000);
 }
@@ -196,6 +222,7 @@ function checkAnswer(selected, correct) {
 function nextQuestion() {
     currentQuestionIndex++;
     loadQuestion();
+
 }
 
 // 🏁 END GAME
@@ -217,6 +244,7 @@ async function endGame() {
     document.getElementById('final-score').textContent = score;
     document.getElementById('results-text').textContent = 
         `You got ${score} points, ${currentPlayer}!`;
+    document.getElementById('highest-streak').textContent = highestStreak;
 
     // Load final leaderboard
     await loadFinalLeaderboard();

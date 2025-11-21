@@ -2,19 +2,31 @@
 <html>
 <head>
     <title>Simple Quiz Game</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="app">
         <!-- LOADING SCREEN -->
         <div id="loader" class="loader">
-            <p>Loading quiz…</p>
+            <div class="loader-inner">
+                <div class="loader-orb"></div>
+                <p>Initializing Neon Quiz Protocol…</p>
+            </div>
         </div>
         
         <!-- LOGIN SCREEN -->
         <div id="login-screen" class="screen active">
-            <h1>🌍 Quick Quiz</h1>
+            <h1>🌐 Neon Identity Quiz</h1>
+            <p class="subtitle">Guess the characters, climb the leaderboard, flex your brain.</p>
             <input type="text" id="username" placeholder="Enter your name" maxlength="20">
             <button onclick="startGame()">Start Quiz</button>
+            <p class="subtitle"> your Gamemode</p>
+            <select id="gamemode">
+                <option value="easy">🟩 Easy (No Timer)</option>
+                <option value="medium">🟨 Medium (10s Timer)</option>
+                <option value="hard">🟥 Hard (5s Timer)</option>
+            </select>
+            
             
             <div class="leaderboard-preview">
                 <h3>🏆 Top Scores</h3>
@@ -25,9 +37,22 @@
         <!-- GAME SCREEN -->
         <div id="game-screen" class="screen">
             <div class="header">
-                <span>Player: <strong id="player-name">-</strong></span>
-                <span>Score: <strong id="score">0</strong></span>
-                <span>Time: <strong id="timer">10</strong>s</span>
+                <div class="stat-pill">
+                    <span class="label">Streak</span>
+                    <span class="value" id="streak">-</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="label">Score</span>
+                    <span class="value" id="score">0</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="label">Time</span>
+                    <span class="value"><span id="timer">10</span>s</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="label">Question</span>
+                    <span class="value" id="question-number">0/0</span>
+                </div>
             </div>
 
             <div class="question-box">
@@ -42,6 +67,7 @@
             <h1>Quiz Complete! 🎉</h1>
             <h2>Score: <span id="final-score">0</span></h2>
             <p id="results-text"></p>
+            <p>Your Highest Streak: <span id="highest-streak">0</span></p>
             
             <div class="buttons">
                 <button onclick="playAgain()">Play Again</button>
